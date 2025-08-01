@@ -1,0 +1,41 @@
+---
+// メンバーカードコンポーネント
+export interface Props {
+  name: string;
+  role: string;
+  imageUrl?: string;
+  websiteUrl?: string;
+  alt?: string;
+}
+
+const { name, role, imageUrl, websiteUrl, alt } = Astro.props;
+---
+
+<div class="bg-white/10 backdrop-blur-sm rounded-lg p-5 border border-white/20 hover:bg-white/20 transition-all duration-300">
+  <div class="flex flex-col items-center text-center">
+    {websiteUrl ? (
+      <a href={websiteUrl} target="_blank" rel="noopener noreferrer"
+         class="w-14 h-14 rounded-full mb-1 hover:scale-110 transition-transform duration-300 overflow-hidden">
+        {imageUrl ? (
+          <img src={imageUrl} alt={alt || name} class="w-full h-full object-cover">
+        ) : (
+          <div class="w-14 h-14 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
+            <span class="text-xl font-bold text-white">{name.charAt(0)}</span>
+          </div>
+        )}
+      </a>
+    ) : (
+      <div class="w-14 h-14 mb-1">
+        {imageUrl ? (
+          <img src={imageUrl} alt={alt || name} class="w-full h-full object-cover rounded-full">
+        ) : (
+          <div class="w-14 h-14 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
+            <span class="text-xl font-bold text-white">{name.charAt(0)}</span>
+          </div>
+        )}
+      </div>
+    )}
+    <h3 class="text-lg font-bold mb-2">{name}</h3>
+    <p class="text-sm text-black mb-3" set:html={role}></p>
+  </div>
+</div>
