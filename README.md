@@ -4,6 +4,8 @@
 
 ## Setup
 
+[mise](https://mise.jdx.dev/) や [nvm](https://github.com/nvm-sh/nvm) など Node.js のバージョン管理ツールの使用を推奨します。
+
 ```bash
 npm install
 npm run dev
