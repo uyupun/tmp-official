@@ -4,7 +4,12 @@
 
 ## Setup
 
+- [mise](https://mise.jdx.dev/) を使用して環境を構築する
+  - .node-version ファイルは Cloudflare が Node.js のバージョンを把握するために残している
+
 ```bash
+mise trust
+mise install
 npm install
 npm run dev
 ```
