@@ -5,7 +5,7 @@
 ## Setup
 
 - [mise](https://mise.jdx.dev/) を使用して環境を構築する
-  - .node-version ファイルは Cloudflare が Node.js のバージョンを把握するために残している
+  - `.node-version` ファイルはCloudflareがNode.jsのバージョンを把握するために残している
 
 ```bash
 mise trust
