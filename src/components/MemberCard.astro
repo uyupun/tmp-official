@@ -2,13 +2,13 @@
 // メンバーカードコンポーネント
 export interface Props {
   name: string;
-  role: string;
+  roles: string[];
   imageUrl?: string;
   websiteUrl?: string;
   alt?: string;
 }
 
-const { name, role, imageUrl, websiteUrl, alt } = Astro.props;
+const { name, roles, imageUrl, websiteUrl, alt } = Astro.props;
 ---
 
 <div class="bg-white/10 backdrop-blur-sm rounded-lg p-5 border border-white/20 hover:bg-white/20 transition-all duration-300">
@@ -36,6 +36,12 @@ const { name, role, imageUrl, websiteUrl, alt } = Astro.props;
       </div>
     )}
     <h3 class="text-lg font-bold mb-2">{name}</h3>
-    <p class="text-sm text-black mb-3" set:html={role}></p>
+    <p class="text-sm text-black mb-3">
+      {roles.map((role, index) => (
+        <>
+          {role}{index < roles.length - 1 && <br />}
+        </>
+      ))}
+    </p>
   </div>
 </div>
