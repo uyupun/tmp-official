@@ -16,6 +16,6 @@
     "@fontsource/zen-kaku-gothic-new": "^5.2.7",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.17.2",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.2.0"
   }
 }
