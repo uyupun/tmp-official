@@ -10,12 +10,18 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "biome check",
+    "check:fix": "biome check --write"
   },
   "dependencies": {
     "@fontsource/zen-kaku-gothic-new": "^5.2.7",
     "@tailwindcss/vite": "^4.2.0",
     "astro": "^5.17.3",
     "tailwindcss": "^4.2.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.4",
+    "lefthook": "2.1.1"
   }
 }
