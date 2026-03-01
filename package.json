@@ -13,9 +13,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@fontsource/zen-kaku-gothic-new": "^5.2.7",
-    "@tailwindcss/vite": "^4.2.0",
-    "astro": "^5.17.3",
-    "tailwindcss": "^4.2.0"
+    "@fontsource/zen-kaku-gothic-new": "5.2.7",
+    "@tailwindcss/vite": "4.2.0",
+    "astro": "5.17.3",
+    "tailwindcss": "4.2.0"
   }
 }
