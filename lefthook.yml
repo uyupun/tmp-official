@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    check-fix:
+      glob: "*.{ts,mjs,astro,css}"
+      run: npm run check:fix -- {staged_files}
+      stage_fixed: true
