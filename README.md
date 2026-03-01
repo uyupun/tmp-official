@@ -11,6 +11,5 @@
 mise trust
 mise install
 npm install
-npx lefthook install
 npm run dev
 ```
