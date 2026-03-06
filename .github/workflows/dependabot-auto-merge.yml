@@ -11,9 +11,9 @@ jobs:
     if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'uyupun/tmp-official'
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        uses: actions/checkout@v6
       - name: Setup mise
-        uses: jdx/mise-action@c53b9236f0b3370f31520f8b142f141256d839c6
+        uses: jdx/mise-action@v3
         with:
           install: true
           cache: true
@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
       - name: Cache npm dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: npm-cache
         with:
           path: ${{ steps.npm-cache-dir.outputs.dir }}
@@ -35,9 +35,7 @@ jobs:
         run: npm run build
       - name: Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+        uses: dependabot/fetch-metadata@v2
       - name: Enable auto-merge for Dependabot PRs
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: gh pr merge --auto --merge "$PR_URL"
