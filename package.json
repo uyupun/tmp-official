@@ -22,7 +22,7 @@
     "tailwindcss": "4.2.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.4",
+    "@biomejs/biome": "2.4.6",
     "lefthook": "2.1.3"
   }
 }
