@@ -19,7 +19,7 @@
     "@fontsource/zen-kaku-gothic-new": "5.2.7",
     "@tailwindcss/vite": "4.2.2",
     "astro": "6.0.7",
-    "tailwindcss": "4.2.1"
+    "tailwindcss": "4.2.2"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.8",
