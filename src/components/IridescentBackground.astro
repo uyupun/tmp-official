@@ -1,0 +1,153 @@
+<canvas id="iridescent-bg"></canvas>
+
+<style>
+  #iridescent-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById("iridescent-bg") as HTMLCanvasElement;
+  const gl = canvas.getContext("webgl");
+
+  if (gl) {
+    const vertSrc = `
+      attribute vec2 a_pos;
+      void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+    `;
+
+    const fragSrc = `
+      precision highp float;
+      uniform float u_time;
+      uniform vec2 u_res;
+
+      vec3 hsl2rgb(float h, float s, float l) {
+        float c = (1.0 - abs(2.0 * l - 1.0)) * s;
+        float hp = mod(h * 6.0, 6.0);
+        float x = c * (1.0 - abs(mod(hp, 2.0) - 1.0));
+        vec3 rgb;
+        if (hp < 1.0) rgb = vec3(c, x, 0.0);
+        else if (hp < 2.0) rgb = vec3(x, c, 0.0);
+        else if (hp < 3.0) rgb = vec3(0.0, c, x);
+        else if (hp < 4.0) rgb = vec3(0.0, x, c);
+        else if (hp < 5.0) rgb = vec3(x, 0.0, c);
+        else rgb = vec3(c, 0.0, x);
+        return rgb + (l - c * 0.5);
+      }
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+      }
+
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return mix(
+          mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+          mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
+          f.y
+        );
+      }
+
+      float fbm(vec2 p) {
+        float v = 0.0;
+        float a = 0.5;
+        for (int i = 0; i < 5; i++) {
+          v += a * noise(p);
+          p = p * 2.1 + vec2(3.1, 1.7);
+          a *= 0.5;
+        }
+        return v;
+      }
+
+      void main() {
+        vec2 uv = gl_FragCoord.xy / u_res;
+        float ar = u_res.x / u_res.y;
+        uv.x *= ar;
+
+        float t = u_time * 0.15;
+
+        // トリプルドメインワープ：FBMをFBMで繰り返し歪めて有機的な帯状パターンを生成
+        vec2 p = uv * 1.2;
+
+        // 1段目
+        float na = fbm(p + vec2(t * 0.28, t * 0.18));
+        float nb = fbm(p + vec2(5.2, 1.3) - vec2(t * 0.18, t * 0.24));
+        vec2 q = vec2(na, nb);
+
+        // 2段目：1段目の出力を入力に
+        float nc = fbm(p + 3.0 * q + vec2(t * 0.14, -t * 0.1));
+        float nd = fbm(p + 3.0 * q + vec2(3.7, 6.1) - vec2(t * 0.11, t * 0.17));
+        vec2 r = vec2(nc, nd);
+
+        // 3段目：カラーフィールドの基になる値
+        float colorField = fbm(p + 3.0 * r + vec2(t * 0.08, t * 0.06));
+
+        // シマー用（明暗の揺らぎ）
+        vec2 warped = uv + (q - 0.5) * 0.38 + (r - 0.5) * 0.2;
+        float shimmer = fbm(warped * 3.5 - vec2(t * 0.18, t * 0.14));
+
+        // colorField → hue：3.5サイクルで複数の帯状色領域が自然に生まれる
+        float hue = fract(colorField * 3.5 + t * 0.022);
+        float sat = 0.92;
+        float lit = clamp(0.46 + shimmer * 0.3, 0.28, 0.76);
+
+        gl_FragColor = vec4(hsl2rgb(hue, sat, lit), 1.0);
+      }
+    `;
+
+    function compileShader(type: number, src: string): WebGLShader {
+      const shader = gl.createShader(type)!;
+      gl.shaderSource(shader, src);
+      gl.compileShader(shader);
+      return shader;
+    }
+
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, vertSrc));
+    gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, fragSrc));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+      gl.STATIC_DRAW
+    );
+
+    const aPos = gl.getAttribLocation(prog, "a_pos");
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    const uTime = gl.getUniformLocation(prog, "u_time");
+    const uRes = gl.getUniformLocation(prog, "u_res");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    let startTime = 0;
+
+    function render(ts: number) {
+      if (!startTime) startTime = ts;
+      gl.uniform1f(uTime, (ts - startTime) / 1000);
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
+  }
+</script>
