@@ -1,11 +1,11 @@
 ---
-// ヘッダーコンポーネント
+import LogoCanvas from "./LogoCanvas.astro";
 ---
 
 <div class="flex flex-col items-center justify-start">
   <div class="logo-wrapper">
     <div class="logo-bg"></div>
-    <img src="/uyupun_logo.png" alt="Uyupun Logo" width="700" class="logo" />
+    <LogoCanvas />
   </div>
   <h1 class="text-8xl font-bold text-center title">UYUPUN</h1>
   <p class="text-2xl text-center mb-8 subtitle">xuxyu ... PUNPO PUNPO Technologies, Org.</p>
@@ -27,15 +27,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background: black;
-  }
-
-  .logo {
-    position: relative;
-    filter:
-      drop-shadow(2px 0 0 white)
-      drop-shadow(-2px 0 0 white)
-      drop-shadow(0 2px 0 white)
-      drop-shadow(0 -2px 0 white);
   }
 
   .title,
