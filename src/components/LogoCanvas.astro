@@ -11,6 +11,17 @@
 
   type GL = WebGL2RenderingContext;
 
+  function createCanvas(container: HTMLElement, width: number, height: number): HTMLCanvasElement {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.display = "block";
+    canvas.style.maxWidth = "100%";
+    canvas.style.height = "auto";
+    container.appendChild(canvas);
+    return canvas;
+  }
+
   function compileShader(gl: GL, type: number, src: string): WebGLShader {
     const shader = gl.createShader(type)!;
     gl.shaderSource(shader, src);
@@ -70,11 +81,7 @@
     img.onload = () => {
       const width = 700;
       const height = Math.round(img.height * (width / img.width));
-
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      container.appendChild(canvas);
+      const canvas = createCanvas(container, width, height);
 
       const gl = canvas.getContext("webgl2")!;
       gl.enable(gl.BLEND);
@@ -100,9 +107,5 @@
       drop-shadow(-2px 0 0 white)
       drop-shadow(0 2px 0 white)
       drop-shadow(0 -2px 0 white);
-  }
-
-  .logo-canvas canvas {
-    display: block;
   }
 </style>
