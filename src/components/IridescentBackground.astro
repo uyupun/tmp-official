@@ -28,19 +28,9 @@
       uniform float u_time;
       uniform vec2 u_res;
 
-      vec3 hsl2rgb(float h, float s, float l) {
-        float c = (1.0 - abs(2.0 * l - 1.0)) * s;
-        float hp = mod(h * 6.0, 6.0);
-        float x = c * (1.0 - abs(mod(hp, 2.0) - 1.0));
-        vec3 rgb;
-        if (hp < 1.0) rgb = vec3(c, x, 0.0);
-        else if (hp < 2.0) rgb = vec3(x, c, 0.0);
-        else if (hp < 3.0) rgb = vec3(0.0, c, x);
-        else if (hp < 4.0) rgb = vec3(0.0, x, c);
-        else if (hp < 5.0) rgb = vec3(x, 0.0, c);
-        else rgb = vec3(c, 0.0, x);
-        return rgb + (l - c * 0.5);
-      }
+      const float TAU   = 6.28318;
+      const float PHI1  = 2.09440; // TAU / 3
+      const float PHI2  = 4.18879; // TAU * 2 / 3
 
       float hash(vec2 p) {
         return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -103,21 +93,20 @@
 
         float shimmer = fbm(warped * 3.5 + vec2(t * 0.11, t * 0.08)) * 0.16;
 
-        // 正弦波RGB：各チャンネルが cos(φ+offset) で変化 → 帯の中央ピーク線が出ない
-        float phi = fract(phase) * 6.28318;
+        float phi = fract(phase) * TAU;
         vec3 col = vec3(
             0.48 + 0.42 * cos(phi),
-            0.48 + 0.42 * cos(phi + 2.094),
-            0.48 + 0.42 * cos(phi + 4.189)
+            0.48 + 0.42 * cos(phi + PHI1),
+            0.48 + 0.42 * cos(phi + PHI2)
         );
 
         col *= 0.80 + shimmer;
         col = mix(col, vec3(1.0), 0.07);         // 控えめなパール感
 
         // 等高線：シャープな1px白線を細かい間隔で
-        float phase_lines = phase * 50.0;
-        float e = min(fract(phase_lines), 1.0 - fract(phase_lines));
-        float contour = 1.0 - smoothstep(0.0, fwidth(phase_lines), e);
+        float phaseLines = phase * 50.0;
+        float e = min(fract(phaseLines), 1.0 - fract(phaseLines));
+        float contour = 1.0 - smoothstep(0.0, fwidth(phaseLines), e);
         col = mix(col, vec3(1.0), contour * 0.65);
 
         col = mix(col, vec3(1.0), cp2 * 0.82);   // 焦点の白
@@ -130,6 +119,9 @@
       const shader = gl.createShader(type)!;
       gl.shaderSource(shader, src);
       gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error("[IridescentBackground] shader compile error:", gl.getShaderInfoLog(shader));
+      }
       return shader;
     }
 
@@ -139,6 +131,9 @@
     gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, vertSrc));
     gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, fragSrc));
     gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error("[IridescentBackground] program link error:", gl.getProgramInfoLog(prog));
+    }
     gl.useProgram(prog);
 
     const buf = gl.createBuffer();
@@ -165,10 +160,10 @@
     window.addEventListener("resize", resize);
     resize();
 
-    let startTime = 0;
+    let startTime: number | null = null;
 
     function render(ts: number) {
-      if (!startTime) startTime = ts;
+      if (startTime === null) startTime = ts;
       gl.uniform1f(uTime, (ts - startTime) / 1000);
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
