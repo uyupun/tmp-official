@@ -62,6 +62,12 @@
     resize();
   }
 
+  function setupFocalJitter(gl: GL, prog: WebGLProgram): void {
+    const jitter = () => (Math.random() - 0.5) * 0.3;
+    gl.uniform2f(gl.getUniformLocation(prog, "u_focalJitter1"), jitter(), jitter());
+    gl.uniform2f(gl.getUniformLocation(prog, "u_focalJitter2"), jitter(), jitter());
+  }
+
   function startRenderLoop(
     gl: GL,
     canvas: HTMLCanvasElement,
@@ -88,6 +94,7 @@
 
     setupQuad(gl, prog);
     setupResizeHandler(gl, canvas);
+    setupFocalJitter(gl, prog);
 
     const uTime = gl.getUniformLocation(prog, "u_time");
     const uRes = gl.getUniformLocation(prog, "u_res");
