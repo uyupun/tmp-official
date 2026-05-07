@@ -14,79 +14,97 @@ float hash(vec2 p) {
 }
 
 float noise(vec2 p) {
-  vec2 i = floor(p);
-  vec2 f = fract(p);
-  f = f * f * (3.0 - 2.0 * f);
+  vec2 cell = floor(p);
+  vec2 frac = fract(p);
+  frac = frac * frac * (3.0 - 2.0 * frac);
   return mix(
-    mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
-    mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
-    f.y
+    mix(hash(cell), hash(cell + vec2(1.0, 0.0)), frac.x),
+    mix(hash(cell + vec2(0.0, 1.0)), hash(cell + vec2(1.0, 1.0)), frac.x),
+    frac.y
   );
 }
 
 float fbm(vec2 p) {
-  float v = 0.0;
-  float a = 0.5;
+  float value = 0.0;
+  float amplitude = 0.5;
   for (int i = 0; i < 5; i++) {
-    v += a * noise(p);
+    value += amplitude * noise(p);
     p = p * 2.1 + vec2(3.1, 1.7);
-    a *= 0.5;
+    amplitude *= 0.5;
   }
-  return v;
+  return value;
+}
+
+// フラグメント座標を [0,1] のUVに変換し、x軸をアスペクト比でスケールする（リングが縦横で歪まないようにするため）
+vec2 toAspectUV(vec2 fragCoord, vec2 res) {
+  vec2 uv = fragCoord / res;
+  uv.x *= res.x / res.y;
+  return uv;
+}
+
+// FBMで座標を時間変化させながら歪ませる（リングのエッジに有機的なゆらぎを与える）
+vec2 warpUV(vec2 p, float time) {
+  float warpX = fbm(p * 0.8 + vec2(time * 0.07, time * 0.04));
+  float warpY = fbm(p * 0.8 + vec2(3.7, 2.1) + vec2(time * 0.04, -time * 0.06));
+  return p + (vec2(warpX, warpY) - 0.5) * 0.55;
+}
+
+// 2焦点からの距離を重み付け合成し、同心円状のリング位相を生成する（時間で位相をずらすことでリングが流れるように見える）
+float ringPhase(float dist1, float dist2, float time) {
+  float weight1 = exp(-dist1 * 1.4);
+  float weight2 = exp(-dist2 * 2.2);
+  float totalWeight = weight1 + weight2 + 0.001;
+  float phase = (weight1 * dist1 * 3.5 + weight2 * (dist2 * 3.5 + 2.0)) / totalWeight;
+  return phase - time * 0.22;
+}
+
+// 焦点に近いほど強くなるスカラー値を返す（焦点の直近だけを鋭く白飛びさせるために使う）
+float centerProximity(float dist1, float dist2) {
+  float glow1 = exp(-dist1 * 3.5);
+  float glow2 = exp(-dist2 * 4.2);
+  float proximity = clamp(glow1 + glow2, 0.0, 1.0);
+  return proximity * proximity;
+}
+
+// 位相をRGBコサイン関数に通して虹色を生成し、シマーで明度ゆらぎを乗せる
+vec3 iridescentColor(float phase, float shimmer) {
+  float angle = fract(phase) * TAU;
+  vec3 color = vec3(
+    0.48 + 0.42 * cos(angle),
+    0.48 + 0.42 * cos(angle + PHI1),
+    0.48 + 0.42 * cos(angle + PHI2)
+  );
+  color *= 0.80 + shimmer;
+  return mix(color, vec3(1.0), 0.07);
+}
+
+// リングの境界に1px幅の白い等高線を重ねる
+vec3 applyContour(vec3 color, float phase) {
+  float scaledPhase = phase * 50.0;
+  float distToEdge = min(fract(scaledPhase), 1.0 - fract(scaledPhase));
+  float contour = 1.0 - smoothstep(0.0, fwidth(scaledPhase), distToEdge);
+  return mix(color, vec3(1.0), contour * 0.65);
 }
 
 void main() {
-  vec2 uv = gl_FragCoord.xy / u_res;
-  float ar = u_res.x / u_res.y;
-  uv.x *= ar;
+  float aspectRatio = u_res.x / u_res.y;
+  float time = u_time * 0.22;
 
-  float t = u_time * 0.22;
+  vec2 uv = toAspectUV(gl_FragCoord.xy, u_res);
+  vec2 warpedUV = warpUV(uv, time);
 
-  // リング形状を保つため控えめなワープ
-  vec2 p = uv;
-  float wx = fbm(p * 0.8 + vec2(t * 0.07, t * 0.04));
-  float wy = fbm(p * 0.8 + vec2(3.7, 2.1) + vec2(t * 0.04, -t * 0.06));
-  vec2 warped = p + (vec2(wx, wy) - 0.5) * 0.55;
+  vec2 focalPoint1 = vec2(aspectRatio * 0.02, 0.96) + vec2(sin(time * 0.18) * 0.09, cos(time * 0.14) * 0.06);
+  vec2 focalPoint2 = vec2(aspectRatio * 0.82, 0.08) + vec2(cos(time * 0.16) * 0.08, sin(time * 0.20) * 0.06);
+  float dist1 = length(warpedUV - focalPoint1);
+  float dist2 = length(warpedUV - focalPoint2);
 
-  // 焦点1：左上コーナー付近、焦点2：右下
-  vec2 c1 = vec2(ar * 0.02, 0.96) + vec2(sin(t * 0.18) * 0.09, cos(t * 0.14) * 0.06);
-  vec2 c2 = vec2(ar * 0.82, 0.08) + vec2(cos(t * 0.16) * 0.08, sin(t * 0.20) * 0.06);
+  float phase = ringPhase(dist1, dist2, time);
+  float focalGlow = centerProximity(dist1, dist2);
+  float shimmer = fbm(warpedUV * 3.5 + vec2(time * 0.11, time * 0.08)) * 0.16;
 
-  float d1 = length(warped - c1);
-  float d2 = length(warped - c2);
+  vec3 color = iridescentColor(phase, shimmer);
+  color = applyContour(color, phase);
+  color = mix(color, vec3(1.0), focalGlow * 0.82);
 
-  // リング位相：広範囲に影響するウェイト
-  float w1 = exp(-d1 * 1.4);
-  float w2 = exp(-d2 * 2.2);
-  float totalW = w1 + w2 + 0.001;
-  float phase = (w1 * d1 * 3.5 + w2 * (d2 * 3.5 + 2.0)) / totalW;
-  phase -= t * 0.22;
-
-  // 明度用：焦点直近だけ鋭く白くなるウェイト
-  float b1 = exp(-d1 * 3.5);
-  float b2 = exp(-d2 * 4.2);
-  float centerProx = clamp(b1 + b2, 0.0, 1.0);
-  float cp2 = centerProx * centerProx;
-
-  float shimmer = fbm(warped * 3.5 + vec2(t * 0.11, t * 0.08)) * 0.16;
-
-  float phi = fract(phase) * TAU;
-  vec3 col = vec3(
-    0.48 + 0.42 * cos(phi),
-    0.48 + 0.42 * cos(phi + PHI1),
-    0.48 + 0.42 * cos(phi + PHI2)
-  );
-
-  col *= 0.80 + shimmer;
-  col = mix(col, vec3(1.0), 0.07);         // 控えめなパール感
-
-  // 等高線：シャープな1px白線を細かい間隔で
-  float phaseLines = phase * 50.0;
-  float e = min(fract(phaseLines), 1.0 - fract(phaseLines));
-  float contour = 1.0 - smoothstep(0.0, fwidth(phaseLines), e);
-  col = mix(col, vec3(1.0), contour * 0.65);
-
-  col = mix(col, vec3(1.0), cp2 * 0.82);   // 焦点の白
-
-  fragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+  fragColor = vec4(clamp(color * 0.92, 0.0, 1.0), 1.0);
 }
