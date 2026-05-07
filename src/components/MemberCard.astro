@@ -19,7 +19,7 @@ const { name, roles, imageUrl, websiteUrl, alt } = Astro.props;
         {imageUrl ? (
           <img src={imageUrl} alt={alt || name} class="w-full h-full object-cover">
         ) : (
-          <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+          <div class="w-14 h-14 bg-blue-950/90 rounded-full flex items-center justify-center">
             <span class="text-xl font-bold">{name.charAt(0)}</span>
           </div>
         )}
@@ -29,7 +29,7 @@ const { name, roles, imageUrl, websiteUrl, alt } = Astro.props;
         {imageUrl ? (
           <img src={imageUrl} alt={alt || name} class="w-full h-full object-cover rounded-full">
         ) : (
-          <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+          <div class="w-14 h-14 bg-blue-950/90 rounded-full flex items-center justify-center">
             <span class="text-xl font-bold">{name.charAt(0)}</span>
           </div>
         )}
