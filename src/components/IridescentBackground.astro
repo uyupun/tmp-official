@@ -15,7 +15,7 @@
   import vertSrc from "../shaders/iridescent.vert?raw";
   import fragSrc from "../shaders/iridescent.frag?raw";
 
-  type GL = WebGLRenderingContext;
+  type GL = WebGL2RenderingContext;
 
   function compileShader(gl: GL, type: number, src: string): WebGLShader {
     const shader = gl.createShader(type)!;
@@ -79,12 +79,9 @@
   }
 
   const canvas = document.getElementById("iridescent-bg") as HTMLCanvasElement;
-  const maybeGl = canvas.getContext("webgl");
+  const gl = canvas.getContext("webgl2");
 
-  if (maybeGl) {
-    const gl = maybeGl;
-    gl.getExtension("OES_standard_derivatives");
-
+  if (gl) {
     const prog = createProgram(gl);
     gl.useProgram(prog);
 

@@ -1,7 +1,9 @@
-#extension GL_OES_standard_derivatives : enable
+#version 300 es
 precision highp float;
 uniform float u_time;
 uniform vec2 u_res;
+
+out vec4 fragColor;
 
 const float TAU  = 6.28318;
 const float PHI1 = 2.09440; // TAU / 3
@@ -86,5 +88,5 @@ void main() {
 
   col = mix(col, vec3(1.0), cp2 * 0.82);   // 焦点の白
 
-  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+  fragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }
