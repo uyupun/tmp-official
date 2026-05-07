@@ -70,11 +70,13 @@ float centerProximity(float dist1, float dist2) {
 
 // 位相をRGBコサイン関数に通して虹色を生成し、シマーで明度ゆらぎを乗せる
 vec3 iridescentColor(float phase, float shimmer) {
+  float colorBrightness = 0.48;
+  float colorSaturation = 0.42;
   float angle = fract(phase) * TAU;
   vec3 color = vec3(
-    0.48 + 0.42 * cos(angle),
-    0.48 + 0.42 * cos(angle + PHI1),
-    0.48 + 0.42 * cos(angle + PHI2)
+    colorBrightness + colorSaturation * cos(angle),
+    colorBrightness + colorSaturation * cos(angle + PHI1),
+    colorBrightness + colorSaturation * cos(angle + PHI2)
   );
   color *= 0.80 + shimmer;
   return mix(color, vec3(1.0), 0.07);
