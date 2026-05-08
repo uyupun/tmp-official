@@ -90,6 +90,19 @@ vec3 applyContour(vec3 color, float phase) {
   return mix(color, vec3(1.0), contour * 0.65);
 }
 
+float filmGrain(vec2 fragCoord, float time) {
+  const float GRAIN_FPS       = 8.0;
+  const uint  TIME_MULTIPLIER = 2654435761u; // Knuth multiplicative hash
+  const uint  HASH_X          = 2246822519u;
+  const uint  HASH_Y          = 3266489917u;
+  const uint  HASH_MIX        = 1274126177u;
+
+  uvec2 seed = uvec2(fragCoord) ^ uvec2(uint(floor(time * GRAIN_FPS)) * TIME_MULTIPLIER);
+  uint n = seed.x * HASH_X ^ seed.y * HASH_Y;
+  n ^= n >> 13u; n *= HASH_MIX;
+  return float(n >> 8u) / float(1u << 24u) - 0.5;
+}
+
 void main() {
   float aspectRatio = u_res.x / u_res.y;
   float time = u_time * 0.22;
@@ -110,5 +123,6 @@ void main() {
   color = applyContour(color, phase);
   color = mix(color, vec3(1.0), focalGlow * 0.82);
 
-  fragColor = vec4(clamp(color * 0.92, 0.0, 1.0), 1.0);
+  float grain = filmGrain(gl_FragCoord.xy, u_time);
+  fragColor = vec4(clamp(color * 0.92 + grain * 0.07, 0.0, 1.0), 1.0);
 }
