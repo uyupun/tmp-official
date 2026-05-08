@@ -90,6 +90,15 @@ vec3 applyContour(vec3 color, float phase) {
   return mix(color, vec3(1.0), contour * 0.65);
 }
 
+float vignette(vec2 fragCoord, vec2 res) {
+  const float VIGNETTE_OUTER = 0.75; // コーナー(0.707)より少し外側から開始
+  const float VIGNETTE_INNER = 0.3; // ここより内側は完全に明るい
+  const float VIGNETTE_MIN   = 0.2; // 端の最暗値(0=真っ黒, 1=変化なし)
+  vec2 uv = fragCoord / res - 0.5;
+  float dist = length(uv);
+  return mix(VIGNETTE_MIN, 1.0, smoothstep(VIGNETTE_OUTER, VIGNETTE_INNER, dist));
+}
+
 float filmGrain(vec2 fragCoord, float time) {
   const float GRAIN_FPS       = 8.0;
   const uint  TIME_MULTIPLIER = 2654435761u; // Knuth multiplicative hash
@@ -123,6 +132,7 @@ void main() {
   color = applyContour(color, phase);
   color = mix(color, vec3(1.0), focalGlow * 0.82);
 
+  float vig = vignette(gl_FragCoord.xy, u_res);
   float grain = filmGrain(gl_FragCoord.xy, u_time);
-  fragColor = vec4(clamp(color * 0.92 + grain * 0.07, 0.0, 1.0), 1.0);
+  fragColor = vec4(clamp(color * 0.92 * vig + grain * 0.07, 0.0, 1.0), 1.0);
 }
