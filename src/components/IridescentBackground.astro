@@ -82,6 +82,13 @@
       targetY = -(e.clientY / window.innerHeight - 0.5) * mouseScale;
     });
 
+    const deviceOrientationScale = 0.5;
+    window.addEventListener("deviceorientation", (e) => {
+      if (e.gamma === null || e.beta === null) return;
+      targetX = (e.gamma / 90) * deviceOrientationScale;
+      targetY = (e.beta / 180) * deviceOrientationScale;
+    });
+
     const update = () => {
       currentX += (targetX - currentX) * 0.05;
       currentY += (targetY - currentY) * 0.05;
