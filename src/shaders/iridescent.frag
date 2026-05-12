@@ -91,6 +91,13 @@ vec3 applyContour(vec3 color, float phase) {
   return mix(color, vec3(1.0), contour * 0.65);
 }
 
+// 輝度の高い部分を加算して発光感を出す
+vec3 applyGlow(vec3 color) {
+  float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+  float glow = smoothstep(0.5, 1.0, luminance);
+  return color + color * glow * 0.6;
+}
+
 float vignette(vec2 fragCoord, vec2 res) {
   const float VIGNETTE_OUTER = 0.75; // コーナー(0.707)より少し外側から開始
   const float VIGNETTE_INNER = 0.3; // ここより内側は完全に明るい
@@ -132,6 +139,7 @@ void main() {
   vec3 color = iridescentColor(phase, shimmer);
   color = applyContour(color, phase);
   color = mix(color, vec3(1.0), focalGlow * 0.82);
+  color = applyGlow(color);
 
   float vig = vignette(gl_FragCoord.xy, u_res);
   float grain = filmGrain(gl_FragCoord.xy, u_time);
