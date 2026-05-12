@@ -69,6 +69,26 @@
     gl.uniform2f(gl.getUniformLocation(prog, "u_focalJitter2"), jitter(), jitter());
   }
 
+  function setupMouseLean(onUpdate: (x: number, y: number) => void): void {
+    const mouseScale = 0.05;
+    window.addEventListener("mousemove", (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * mouseScale;
+      const y = -(e.clientY / window.innerHeight - 0.5) * mouseScale;
+      onUpdate(x, y);
+    });
+  }
+
+  // iOS 13+ は DeviceOrientationEvent.requestPermission() が必要なため動作しない
+  function setupDeviceOrientationLean(onUpdate: (x: number, y: number) => void): void {
+    const deviceOrientationScale = 0.5;
+    window.addEventListener("deviceorientation", (e) => {
+      if (e.gamma === null || e.beta === null) return;
+      const x = (e.gamma / 90) * deviceOrientationScale;
+      const y = (e.beta / 180) * deviceOrientationScale;
+      onUpdate(x, y);
+    });
+  }
+
   function setupLean(gl: GL, prog: WebGLProgram): void {
     let targetX = 0;
     let targetY = 0;
@@ -76,18 +96,13 @@
     let currentY = 0;
     const uLean = gl.getUniformLocation(prog, "u_lean");
 
-    const mouseScale = 0.05;
-    window.addEventListener("mousemove", (e) => {
-      targetX = (e.clientX / window.innerWidth - 0.5) * mouseScale;
-      targetY = -(e.clientY / window.innerHeight - 0.5) * mouseScale;
-    });
+    const setTarget = (x: number, y: number) => {
+      targetX = x;
+      targetY = y;
+    };
 
-    const deviceOrientationScale = 0.5;
-    window.addEventListener("deviceorientation", (e) => {
-      if (e.gamma === null || e.beta === null) return;
-      targetX = (e.gamma / 90) * deviceOrientationScale;
-      targetY = (e.beta / 180) * deviceOrientationScale;
-    });
+    setupMouseLean(setTarget);
+    setupDeviceOrientationLean(setTarget);
 
     const update = () => {
       currentX += (targetX - currentX) * 0.05;
