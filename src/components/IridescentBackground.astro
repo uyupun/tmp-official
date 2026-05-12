@@ -63,9 +63,32 @@
   }
 
   function setupFocalJitter(gl: GL, prog: WebGLProgram): void {
-    const jitter = () => (Math.random() - 0.5) * 0.3;
+    const jitterScale = 0.3;
+    const jitter = () => (Math.random() - 0.5) * jitterScale;
     gl.uniform2f(gl.getUniformLocation(prog, "u_focalJitter1"), jitter(), jitter());
     gl.uniform2f(gl.getUniformLocation(prog, "u_focalJitter2"), jitter(), jitter());
+  }
+
+  function setupLean(gl: GL, prog: WebGLProgram): void {
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    const uLean = gl.getUniformLocation(prog, "u_lean");
+
+    const mouseScale = 0.05;
+    window.addEventListener("mousemove", (e) => {
+      targetX = (e.clientX / window.innerWidth - 0.5) * mouseScale;
+      targetY = -(e.clientY / window.innerHeight - 0.5) * mouseScale;
+    });
+
+    const update = () => {
+      currentX += (targetX - currentX) * 0.05;
+      currentY += (targetY - currentY) * 0.05;
+      gl.uniform2f(uLean, currentX, currentY);
+      requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
   }
 
   function startRenderLoop(
@@ -95,6 +118,7 @@
     setupQuad(gl, prog);
     setupResizeHandler(gl, canvas);
     setupFocalJitter(gl, prog);
+    setupLean(gl, prog);
 
     const uTime = gl.getUniformLocation(prog, "u_time");
     const uRes = gl.getUniformLocation(prog, "u_res");

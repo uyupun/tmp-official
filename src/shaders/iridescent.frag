@@ -4,6 +4,7 @@ uniform float u_time;
 uniform vec2 u_res;
 uniform vec2 u_focalJitter1;
 uniform vec2 u_focalJitter2;
+uniform vec2 u_lean;
 
 out vec4 fragColor;
 
@@ -119,8 +120,8 @@ void main() {
   vec2 uv = toAspectUV(gl_FragCoord.xy, u_res);
   vec2 warpedUV = warpUV(uv, time);
 
-  vec2 focalPoint1 = vec2(aspectRatio * 0.02, 0.96) + u_focalJitter1 + vec2(sin(time * 0.18) * 0.09, cos(time * 0.14) * 0.06);
-  vec2 focalPoint2 = vec2(aspectRatio * 0.82, 0.08) + u_focalJitter2 + vec2(cos(time * 0.16) * 0.08, sin(time * 0.20) * 0.06);
+  vec2 focalPoint1 = vec2(aspectRatio * 0.02, 0.96) + u_focalJitter1 + vec2(sin(time * 0.18) * 0.09, cos(time * 0.14) * 0.06) + u_lean;
+  vec2 focalPoint2 = vec2(aspectRatio * 0.82, 0.08) + u_focalJitter2 + vec2(cos(time * 0.16) * 0.08, sin(time * 0.20) * 0.06) - u_lean;
   float dist1 = length(warpedUV - focalPoint1);
   float dist2 = length(warpedUV - focalPoint2);
 
