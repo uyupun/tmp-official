@@ -18,12 +18,12 @@
   "dependencies": {
     "@fontsource/pirata-one": "5.2.8",
     "@fontsource/zen-kaku-gothic-new": "5.2.7",
-    "@tailwindcss/vite": "4.2.4",
-    "astro": "6.2.2",
-    "tailwindcss": "4.2.4"
+    "@tailwindcss/vite": "4.3.0",
+    "astro": "6.3.3",
+    "tailwindcss": "4.3.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.14",
+    "@biomejs/biome": "2.4.15",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "lefthook": "2.1.6"
   }
