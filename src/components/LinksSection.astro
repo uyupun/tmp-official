@@ -2,37 +2,31 @@
 // リンクセクションコンポーネント
 ---
 
-<div class="mt-12 w-full max-w-4xl">
-  <h2 class="text-2xl font-bold text-center mb-6">Links</h2>
-  <div class="flex flex-col sm:flex-row sm:flex-wrap justify-center sm:items-center gap-4 items-center">
-    <a href="https://github.com/uyupun" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-2 pl-20 pr-16 py-2 w-full max-w-xs mx-auto sm:w-auto sm:max-w-none sm:mx-0 sm:px-4">
-      <span class="text-xl w-6 flex-shrink-0">💻</span>
-      <span class="hover:underline">GitHub</span>
+<div class="mt-12 w-full max-w-xl mx-auto">
+  <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6 section-title">LINKS</h2>
+  <div class="w-fit mx-auto flex flex-col text-center gap-y-2 md:flex-row md:flex-wrap md:justify-center md:gap-x-8 md:gap-y-1.5 bg-black/50 backdrop-blur-sm rounded-lg px-6 py-3 text-white">
+    <a href="https://github.com/uyupun" target="_blank" rel="noopener noreferrer" class="hover:underline">
+      GitHub
     </a>
-
-    <a href="https://semi.uyupun.tech" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-2 pl-20 pr-16 py-2 w-full max-w-xs mx-auto sm:w-auto sm:max-w-none sm:mx-0 sm:px-4">
-      <span class="text-xl w-6 flex-shrink-0">🎓</span>
-      <span class="hover:underline">高田ゼミ</span>
+    <a href="https://semi.uyupun.tech" target="_blank" rel="noopener noreferrer" class="hover:underline">
+      Takada Semi
     </a>
-
-    <a href="https://www.youtube.com/@uyupun-radio" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-2 pl-20 pr-16 py-2 w-full max-w-xs mx-auto sm:w-auto sm:max-w-none sm:mx-0 sm:px-4">
-      <span class="text-xl w-6 flex-shrink-0">📺</span>
-      <span class="hover:underline">UYUPUN RADIO</span>
+    <a href="https://www.youtube.com/@uyupun-radio" target="_blank" rel="noopener noreferrer" class="hover:underline">
+      UYUPUN RADIO
     </a>
-
-    <a href="https://qiita.com/organizations/uyupun" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-2 pl-20 pr-16 py-2 w-full max-w-xs mx-auto sm:w-auto sm:max-w-none sm:mx-0 sm:px-4">
-      <span class="text-xl w-6 flex-shrink-0">📝</span>
-      <span class="hover:underline">Qiita</span>
+    <a href="https://qiita.com/organizations/uyupun" target="_blank" rel="noopener noreferrer" class="hover:underline">
+      Qiita
     </a>
-
-    <a href="https://github.com/uyupun-archive" target="_blank" rel="noopener noreferrer"
-       class="flex items-center gap-2 pl-20 pr-16 py-2 w-full max-w-xs mx-auto sm:w-auto sm:max-w-none sm:mx-0 sm:px-4">
-      <span class="text-xl w-6 flex-shrink-0">📦</span>
-      <span class="hover:underline">GitHub(Archive)</span>
+    <a href="https://github.com/uyupun-archive" target="_blank" rel="noopener noreferrer" class="hover:underline">
+      GitHub(Archive)
     </a>
   </div>
 </div>
+
+<style>
+  .section-title {
+    font-family: "Pirata One", cursive;
+    -webkit-text-stroke: 2px white;
+    paint-order: stroke fill;
+  }
+</style>

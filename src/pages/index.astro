@@ -1,18 +1,18 @@
 ---
-import ContactSection from "../components/ContactSection.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import LinksSection from "../components/LinksSection.astro";
 import MembersSection from "../components/MembersSection.astro";
+import VideoSection from "../components/VideoSection.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <div class="flex flex-col items-center justify-start min-h-screen p-8 pt-4">
+  <div class="flex flex-col items-center justify-start min-h-screen px-4 py-8 pt-4 md:px-8">
     <Header />
+    <VideoSection />
     <LinksSection />
     <MembersSection />
-    <ContactSection />
     <Footer />
   </div>
 </Layout>

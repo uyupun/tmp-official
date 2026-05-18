@@ -1,0 +1,149 @@
+<canvas id="iridescent-bg"></canvas>
+
+<style>
+  #iridescent-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+</style>
+
+<script>
+  import vertSrc from "../shaders/iridescent.vert?raw";
+  import fragSrc from "../shaders/iridescent.frag?raw";
+
+  type GL = WebGL2RenderingContext;
+
+  function compileShader(gl: GL, type: number, src: string): WebGLShader {
+    const shader = gl.createShader(type)!;
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error("[IridescentBackground] shader compile error:", gl.getShaderInfoLog(shader));
+    }
+    return shader;
+  }
+
+  function createProgram(gl: GL): WebGLProgram {
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, compileShader(gl, gl.VERTEX_SHADER, vertSrc));
+    gl.attachShader(prog, compileShader(gl, gl.FRAGMENT_SHADER, fragSrc));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error("[IridescentBackground] program link error:", gl.getProgramInfoLog(prog));
+    }
+    return prog;
+  }
+
+  function setupQuad(gl: GL, prog: WebGLProgram): void {
+    const vertices = new Float32Array([
+      -1, -1, // 左下
+       1, -1, // 右下
+      -1,  1, // 左上
+       1,  1, // 右上
+    ]);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    const pos = gl.getAttribLocation(prog, "pos");
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  }
+
+  function setupResizeHandler(gl: GL, canvas: HTMLCanvasElement): void {
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+  }
+
+  function setupFocalJitter(gl: GL, prog: WebGLProgram): void {
+    const jitterScale = 0.3;
+    const jitter = () => (Math.random() - 0.5) * jitterScale;
+    gl.uniform2f(gl.getUniformLocation(prog, "u_focalJitter1"), jitter(), jitter());
+    gl.uniform2f(gl.getUniformLocation(prog, "u_focalJitter2"), jitter(), jitter());
+  }
+
+  function setupMouseLean(onUpdate: (x: number, y: number) => void): void {
+    const mouseScale = 0.05;
+    window.addEventListener("mousemove", (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * mouseScale;
+      const y = -(e.clientY / window.innerHeight - 0.5) * mouseScale;
+      onUpdate(x, y);
+    });
+  }
+
+  // iOS 13+ は DeviceOrientationEvent.requestPermission() が必要なため動作しない
+  function setupDeviceOrientationLean(onUpdate: (x: number, y: number) => void): void {
+    const deviceOrientationScale = 0.5;
+    window.addEventListener("deviceorientation", (e) => {
+      if (e.gamma === null || e.beta === null) return;
+      const x = (e.gamma / 90) * deviceOrientationScale;
+      const y = (e.beta / 180) * deviceOrientationScale;
+      onUpdate(x, y);
+    });
+  }
+
+  function setupLean(gl: GL, prog: WebGLProgram): void {
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    const uLean = gl.getUniformLocation(prog, "u_lean");
+
+    const setTarget = (x: number, y: number) => {
+      targetX = x;
+      targetY = y;
+    };
+
+    setupMouseLean(setTarget);
+    setupDeviceOrientationLean(setTarget);
+
+    const update = () => {
+      currentX += (targetX - currentX) * 0.05;
+      currentY += (targetY - currentY) * 0.05;
+      gl.uniform2f(uLean, currentX, currentY);
+      requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  }
+
+  function startRenderLoop(
+    gl: GL,
+    canvas: HTMLCanvasElement,
+    uTime: WebGLUniformLocation | null,
+    uRes: WebGLUniformLocation | null
+  ): void {
+    let startTime: number | null = null;
+    function render(ts: number) {
+      if (startTime === null) startTime = ts;
+      gl.uniform1f(uTime, (ts - startTime) / 1000);
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+  }
+
+  const canvas = document.getElementById("iridescent-bg") as HTMLCanvasElement;
+  const gl = canvas.getContext("webgl2");
+
+  if (gl) {
+    const prog = createProgram(gl);
+    gl.useProgram(prog);
+
+    setupQuad(gl, prog);
+    setupResizeHandler(gl, canvas);
+    setupFocalJitter(gl, prog);
+    setupLean(gl, prog);
+
+    const uTime = gl.getUniformLocation(prog, "u_time");
+    const uRes = gl.getUniformLocation(prog, "u_res");
+    startRenderLoop(gl, canvas, uTime, uRes);
+  }
+</script>

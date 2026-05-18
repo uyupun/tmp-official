@@ -11,7 +11,7 @@
 $ mise trust
 $ mise install
 $ npm install
-$ npm run dev
+$ npm run dev -- --host
 ```
 
 ## License

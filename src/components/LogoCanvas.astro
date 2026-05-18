@@ -1,0 +1,111 @@
+---
+// ロゴ画像をWebGLで描画するコンポーネント
+// エフェクト: 彩度低下 + 赤みの色調整 + 色収差（RGB分割）
+---
+
+<div id="logo-canvas" class="logo-canvas"></div>
+
+<script>
+  import VERT from "../shaders/logo.vert?raw";
+  import FRAG from "../shaders/logo.frag?raw";
+
+  type GL = WebGL2RenderingContext;
+
+  function createCanvas(container: HTMLElement, width: number, height: number): HTMLCanvasElement {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.display = "block";
+    canvas.style.maxWidth = "100%";
+    canvas.style.height = "auto";
+    container.appendChild(canvas);
+    return canvas;
+  }
+
+  function compileShader(gl: GL, type: number, src: string): WebGLShader {
+    const shader = gl.createShader(type)!;
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error("[LogoCanvas] shader compile error:", gl.getShaderInfoLog(shader));
+    }
+    return shader;
+  }
+
+  function createProgram(gl: GL): WebGLProgram {
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, compileShader(gl, gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, compileShader(gl, gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.error("[LogoCanvas] program link error:", gl.getProgramInfoLog(prog));
+    }
+    return prog;
+  }
+
+  function setupQuad(gl: GL, prog: WebGLProgram): void {
+    const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    const pos = gl.getAttribLocation(prog, "pos");
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  }
+
+  function setupTexture(gl: GL, img: HTMLImageElement): void {
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+  }
+
+  function setupUniforms(gl: GL, prog: WebGLProgram, w: number, h: number): void {
+    gl.uniform1i(gl.getUniformLocation(prog, "u_tex"), 0);
+    gl.uniform2f(gl.getUniformLocation(prog, "u_pixelSize"), 1 / w, 1 / h);
+  }
+
+  function render(gl: GL, w: number, h: number): void {
+    gl.viewport(0, 0, w, h);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  const container = document.getElementById("logo-canvas");
+  if (container) {
+    const img = new Image();
+    img.onload = () => {
+      const width = 700;
+      const height = Math.round(img.height * (width / img.width));
+      const canvas = createCanvas(container, width, height);
+
+      const gl = canvas.getContext("webgl2")!;
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+      const prog = createProgram(gl);
+      gl.useProgram(prog);
+
+      setupQuad(gl, prog);
+      setupTexture(gl, img);
+      setupUniforms(gl, prog, width, height);
+      render(gl, width, height);
+    };
+    img.src = "/uyupun_logo.png";
+  }
+</script>
+
+<style>
+  .logo-canvas {
+    position: relative;
+    filter:
+      drop-shadow(2px 0 0 white)
+      drop-shadow(-2px 0 0 white)
+      drop-shadow(0 2px 0 white)
+      drop-shadow(0 -2px 0 white);
+  }
+</style>
