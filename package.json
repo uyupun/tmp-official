@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.15",
-    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "@vitejs/plugin-basic-ssl": "2.3.0",
     "lefthook": "2.1.6"
   }
 }
