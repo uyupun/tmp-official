@@ -19,7 +19,7 @@
     "@fontsource/pirata-one": "5.2.8",
     "@fontsource/zen-kaku-gothic-new": "5.2.7",
     "@tailwindcss/vite": "4.3.0",
-    "astro": "6.3.3",
+    "astro": "6.3.7",
     "tailwindcss": "4.3.0"
   },
   "devDependencies": {
