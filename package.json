@@ -18,7 +18,7 @@
   "dependencies": {
     "@fontsource/pirata-one": "5.2.8",
     "@fontsource/zen-kaku-gothic-new": "5.2.7",
-    "@tailwindcss/vite": "4.3.2",
+    "@tailwindcss/vite": "4.3.3",
     "astro": "7.1.0",
     "tailwindcss": "4.3.3"
   },
