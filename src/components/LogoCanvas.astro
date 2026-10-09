@@ -94,6 +94,7 @@
       setupTexture(gl, img);
       setupUniforms(gl, prog, width, height);
       render(gl, width, height);
+      container.classList.add("is-loaded");
     };
     img.src = "/uyupun_logo.png";
   }
@@ -102,10 +103,18 @@
 <style>
   .logo-canvas {
     position: relative;
+    /* 画像読み込み前から高さを確保し、レイアウトのずれを防ぐ（uyupun_logo.png の縦横比） */
+    aspect-ratio: 1400 / 999;
+    opacity: 0;
+    transition: opacity 0.8s ease-out;
     filter:
       drop-shadow(2px 0 0 white)
       drop-shadow(-2px 0 0 white)
       drop-shadow(0 2px 0 white)
       drop-shadow(0 -2px 0 white);
+  }
+
+  .logo-canvas.is-loaded {
+    opacity: 1;
   }
 </style>
