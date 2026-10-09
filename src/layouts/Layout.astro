@@ -1,4 +1,5 @@
 ---
+import { Font } from "astro:assets";
 import "../styles/global.css";
 import IridescentBackground from "../components/IridescentBackground.astro";
 ---
@@ -11,6 +12,8 @@ import IridescentBackground from "../components/IridescentBackground.astro";
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="preload" as="image" href="/uyupun_logo.png" fetchpriority="high" />
+    <Font cssVariable="--font-pirata-one" preload />
+    <Font cssVariable="--font-zen-kaku-gothic-new" />
     <meta name="generator" content={Astro.generator} />
     <title>UYUPUN</title>
   </head>

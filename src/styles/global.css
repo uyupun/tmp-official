@@ -1,7 +1,5 @@
 @import "tailwindcss";
-@import "@fontsource/zen-kaku-gothic-new";
-@import "@fontsource/pirata-one";
 
 * {
-  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-family: var(--font-zen-kaku-gothic-new);
 }
