@@ -16,22 +16,9 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
     }
   },
-  "overrides": [
-    {
-      "includes": ["**/*.astro"],
-      "linter": {
-        "rules": {
-          "correctness": {
-            "noUnusedVariables": "off",
-            "noUnusedImports": "off"
-          }
-        }
-      }
-    }
-  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "double"
@@ -44,5 +31,8 @@
         "organizeImports": "on"
       }
     }
+  },
+  "html": {
+    "experimentalFullSupportEnabled": true
   }
 }
