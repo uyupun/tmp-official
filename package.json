@@ -21,7 +21,7 @@
     "tailwindcss": "4.3.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.3",
     "@vitejs/plugin-basic-ssl": "2.3.0",
     "lefthook": "2.2.2"
   }
