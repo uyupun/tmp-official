@@ -23,7 +23,8 @@
   }
 
   function compileShader(gl: GL, type: number, src: string): WebGLShader {
-    const shader = gl.createShader(type)!;
+    const shader = gl.createShader(type);
+    if (!shader) throw new Error("[LogoCanvas] failed to create shader");
     gl.shaderSource(shader, src);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -33,7 +34,8 @@
   }
 
   function createProgram(gl: GL): WebGLProgram {
-    const prog = gl.createProgram()!;
+    const prog = gl.createProgram();
+    if (!prog) throw new Error("[LogoCanvas] failed to create program");
     gl.attachShader(prog, compileShader(gl, gl.VERTEX_SHADER, VERT));
     gl.attachShader(prog, compileShader(gl, gl.FRAGMENT_SHADER, FRAG));
     gl.linkProgram(prog);
@@ -83,7 +85,8 @@
       const height = Math.round(img.height * (width / img.width));
       const canvas = createCanvas(container, width, height);
 
-      const gl = canvas.getContext("webgl2")!;
+      const gl = canvas.getContext("webgl2");
+      if (!gl) return;
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 

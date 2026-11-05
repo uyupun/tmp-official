@@ -17,7 +17,8 @@
   type GL = WebGL2RenderingContext;
 
   function compileShader(gl: GL, type: number, src: string): WebGLShader {
-    const shader = gl.createShader(type)!;
+    const shader = gl.createShader(type);
+    if (!shader) throw new Error("[IridescentBackground] failed to create shader");
     gl.shaderSource(shader, src);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -27,7 +28,8 @@
   }
 
   function createProgram(gl: GL): WebGLProgram {
-    const prog = gl.createProgram()!;
+    const prog = gl.createProgram();
+    if (!prog) throw new Error("[IridescentBackground] failed to create program");
     gl.attachShader(prog, compileShader(gl, gl.VERTEX_SHADER, vertSrc));
     gl.attachShader(prog, compileShader(gl, gl.FRAGMENT_SHADER, fragSrc));
     gl.linkProgram(prog);
