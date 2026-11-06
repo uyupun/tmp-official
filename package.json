@@ -16,7 +16,7 @@
     "check:fix": "biome check --write --unsafe --error-on-warnings"
   },
   "dependencies": {
-    "@tailwindcss/vite": "4.3.3",
+    "@tailwindcss/vite": "4.3.4",
     "astro": "7.4.2",
     "tailwindcss": "4.3.3"
   },
