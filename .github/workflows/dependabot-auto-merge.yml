@@ -36,6 +36,6 @@ jobs:
       - name: Build project
         run: npm run build
       - name: Auto-merge
-        uses: oborodice/dependabot-actions/auto-merge@v1
+        uses: oborodice/dependabot-auto-merge@v2
         with:
           update-types: patch,minor
