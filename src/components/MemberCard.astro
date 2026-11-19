@@ -5,36 +5,51 @@ export interface Props {
   roles: string[];
   imageUrl?: string;
   websiteUrl?: string;
-  alt?: string;
 }
 
-const { name, roles, imageUrl, websiteUrl, alt } = Astro.props;
+const { name, roles, imageUrl, websiteUrl } = Astro.props;
+
+// リンクありのカードは全体をリンクにする（押せる範囲を広げるため）
+const Tag = websiteUrl ? "a" : "div";
+const linkProps = websiteUrl
+  ? { href: websiteUrl, target: "_blank", rel: "noopener noreferrer" }
+  : {};
 ---
 
-<div class="bg-black/50 backdrop-blur-sm rounded-lg p-7 text-white">
+<Tag
+  {...linkProps}
+  class:list={[
+    "relative block bg-black/50 backdrop-blur-sm rounded-lg p-7 text-white",
+    websiteUrl && "hover:bg-black/65 focus-visible:bg-black/65 transition-colors",
+  ]}
+>
+  {/* リンクのないカードと見分けるための目印（スマホでも見えるよう常に表示） */}
+  {websiteUrl && (
+    <svg
+      class="absolute top-3 right-3 w-4 h-4 text-white/60"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 11 11 5M6 5h5v5" />
+    </svg>
+  )}
   <div class="flex flex-col items-center text-center">
-    {websiteUrl ? (
-      <a href={websiteUrl} target="_blank" rel="noopener noreferrer"
-         class="w-14 h-14 rounded-full mb-3 overflow-hidden hover:opacity-80 transition-opacity">
-        {imageUrl ? (
-          <img src={imageUrl} alt={alt || name} class="w-full h-full object-cover">
-        ) : (
-          <div class="w-14 h-14 bg-blue-950/90 rounded-full flex items-center justify-center">
-            <span class="text-xl font-bold">{name.charAt(0)}</span>
-          </div>
-        )}
-      </a>
-    ) : (
-      <div class="w-14 h-14 mb-3">
-        {imageUrl ? (
-          <img src={imageUrl} alt={alt || name} class="w-full h-full object-cover rounded-full">
-        ) : (
-          <div class="w-14 h-14 bg-blue-950/90 rounded-full flex items-center justify-center">
-            <span class="text-xl font-bold">{name.charAt(0)}</span>
-          </div>
-        )}
-      </div>
-    )}
+    <div class="w-14 h-14 mb-3">
+      {imageUrl ? (
+        <img src={imageUrl} alt="" class="w-full h-full object-cover rounded-full">
+      ) : (
+        <div class="w-full h-full bg-blue-950/90 rounded-full flex items-center justify-center">
+          <span class="text-xl font-bold">{name.charAt(0)}</span>
+        </div>
+      )}
+    </div>
     <h3 class="text-lg font-bold mb-2">{name}</h3>
     <p class="text-sm text-white/70">
       {roles.map((role, index) => (
@@ -44,4 +59,4 @@ const { name, roles, imageUrl, websiteUrl, alt } = Astro.props;
       ))}
     </p>
   </div>
-</div>
+</Tag>
