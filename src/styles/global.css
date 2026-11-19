@@ -3,3 +3,11 @@
 * {
   font-family: var(--font-zen-kaku-gothic-new);
 }
+
+/* 見出し用の書体（Pirata One + 白い縁取り） */
+/* Tailwind の @utility にするとレイヤー内に入り、上の * の指定に負けるため通常のクラスで定義する */
+.display-text {
+  font-family: var(--font-pirata-one);
+  -webkit-text-stroke: 2px white;
+  paint-order: stroke fill;
+}
