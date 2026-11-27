@@ -28,16 +28,24 @@ const typeLabel: Record<Work["data"]["type"], string> = {
   print: "PRINT",
 };
 
+// 年月を「Nov 2026」の形にする（作品名の下の行は英語なので、日付も英語の月名にそろえる）
 // 2026-11 と書いた年月は世界標準時の 1日 0時として読まれる。ビルドする環境の時刻で読むと、
 // 標準時より遅れた地域では前月の末日になってしまうので、標準時のまま取り出す
 function formatDate(date: Date): string {
-  return `${date.getUTCFullYear()}.${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }
 
-// 作品名の下に添える情報。種別は常に出し、出展と印刷物には年月を足す
+// 作品名の下に添える情報。種別は常に出し、出展と印刷物には年月を、作者がいれば名前を足す
 // 作品は更新され続けるので日付を出さない
+// 中黒で並べるだけでは名前が作者だと分からないので、by を付ける
 export function captionOf(work: Work): string {
-  const { type, date } = work.data;
-  if (type === "work" || !date) return typeLabel[type];
-  return `${typeLabel[type]} · ${formatDate(date)}`;
+  const { type, date, authors } = work.data;
+  const parts = [typeLabel[type]];
+  if (type !== "work" && date) parts.push(formatDate(date));
+  if (authors) parts.push(`by ${authors.join(", ")}`);
+  return parts.join(" · ");
 }

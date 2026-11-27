@@ -25,6 +25,8 @@ const works = defineCollection({
         // カードの画像。works.yaml からの相対パス（例: ./works/foo.jpg）
         // 動画のサムネイルを使う場合も、余白を見て切り抜いたものを置く（縦横比がそのままカードの形になる）
         thumbnail: image(),
+        // 作ったメンバーの名前（MEMBERS の表記と同じ）。チーム全体で作ったものは UYUPUN と書く。出展には書かない
+        authors: z.array(z.string()).nonempty().optional(),
         // YouTube の動画ID（https://www.youtube.com/watch?v=<ここ>）。url がなければカードの行き先になる
         // URL を丸ごと貼る間違いを止める。ID の長さは公式に決まっていないので、使える文字だけを確かめる
         youtube: z
@@ -47,6 +49,11 @@ const works = defineCollection({
       .refine((data) => data.type !== "exhibition" || data.date, {
         message: "出展（exhibition）には date が必要です",
         path: ["date"],
+      })
+      .refine((data) => data.type !== "exhibition" || !data.authors, {
+        message:
+          "出展（exhibition）には authors を書きません（UYUPUN として出たものなので）",
+        path: ["authors"],
       }),
 });
 
