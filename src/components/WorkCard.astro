@@ -1,0 +1,51 @@
+---
+// 作品・出展・印刷物のカード。MEMBERS のカードと同じく、行き先があるものだけリンクにして右下に矢印を出す
+import { Image } from "astro:assets";
+import { captionOf, hrefOf, ratioOf, type Work } from "../lib/works";
+import NewTabMark from "./NewTabMark.astro";
+
+export interface Props {
+  work: Work;
+  class?: string;
+}
+
+const { work, class: className } = Astro.props;
+const href = hrefOf(work);
+const Tag = href ? "a" : "div";
+const linkProps = href ? { href, target: "_blank", rel: "noopener noreferrer" } : {};
+---
+
+<Tag
+  {...linkProps}
+  class:list={[
+    // p-2 が画像まわりのベゼル（8px）。トップの横一列はこの値でカードの幅を計算している
+    "relative block p-2 bg-black/50 backdrop-blur-sm rounded-lg text-white",
+    href && "hover:bg-black/65 focus-visible:bg-black/65 transition-colors",
+    className,
+  ]}
+  style={`--ratio: ${ratioOf(work)}`}
+>
+  {/* 角の丸みはカード（8px）からベゼル（8px）を引いた値に近づけ、角でベゼルが太って見えないようにする */}
+  <div class="thumbnail rounded-xs overflow-hidden">
+    {/* ビルド時に WebP へ変換し、表示幅に合わせて出し分ける。カードは最大で列の半分（約340px）なので、その1倍・2倍を用意する
+        alt を空にしているのは、すぐ下に作品名があり、読み上げで同じ名前を二度読ませないため */}
+    <Image
+      src={work.data.thumbnail}
+      alt=""
+      widths={[400, 800]}
+      sizes="(min-width: 768px) 340px, 100vw"
+      class="block w-full h-full object-cover"
+    />
+  </div>
+  {/* いちばん目立たせるのは作品名。種別（出展と印刷物は年月も）を添える。大きさは MEMBERS の名前・肩書きとそろえる */}
+  <p class="mt-2 text-base md:text-lg font-bold leading-snug">{work.data.title}</p>
+  {/* 矢印と重ならないよう右に余白をとる */}
+  <p class="mt-1 pr-5 text-sm tracking-wider text-white/70">{captionOf(work)}</p>
+  {href && <NewTabMark />}
+</Tag>
+
+<style>
+  .thumbnail {
+    aspect-ratio: var(--ratio);
+  }
+</style>

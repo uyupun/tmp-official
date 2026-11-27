@@ -1,0 +1,81 @@
+# 作品・出展・印刷物の一覧。上から新しい順に並び、トップには先頭の3件が出る
+# 画像は src/content/works/ に置き、このファイルからの相対パスで書く
+# 項目の意味と、書けない組み合わせは src/content.config.ts を参照
+
+- id: nt-nagoya-2026
+  title: NT名古屋 2026
+  type: exhibition
+  date: 2026-11
+  thumbnail: ./works/nt-nagoya-2026.jpg
+  youtube: 0L2FWCPye5E
+
+- id: synclay
+  title: SYNCLAY
+  type: work
+  thumbnail: ./works/synclay.jpg
+
+- id: trencadia
+  title: Trencadia
+  type: work
+  thumbnail: ./works/trencadia.jpg
+  youtube: LJad0HrktXc
+
+- id: eigenzeit
+  title: Eigenzeiτ
+  type: work
+  thumbnail: ./works/eigenzeit.jpg
+  youtube: amd6VJukqjc
+
+- id: uyupun-releases-v1
+  title: UYUPUN RELEASES v1.0.0
+  type: print
+  thumbnail: ./works/uyupun-releases-v1.jpg
+  url: /prints/uyupun-releases-v1.0.0.pdf
+
+- id: ghosts
+  title: ∂hosts
+  type: work
+  thumbnail: ./works/ghosts.jpg
+  youtube: wyBJe3_0Etc
+
+- id: inverted-horizon
+  title: Inverted Horizon
+  type: work
+  thumbnail: ./works/inverted-horizon.jpg
+  youtube: EwZ3J43id7k
+
+- id: seihitsu-na-buso-no-kengen
+  title: 静謐な武装の顕現
+  type: work
+  thumbnail: ./works/seihitsu-na-buso-no-kengen.jpg
+
+- id: nt-kanazawa-2026
+  title: NT金沢 2026
+  type: exhibition
+  date: 2026-06
+  thumbnail: ./works/nt-kanazawa-2026.jpg
+  youtube: cFkXHpVYU3k
+
+- id: uyupun-poster
+  title: 甲種異獣創造者
+  type: print
+  thumbnail: ./works/uyupun-poster.jpg
+  url: /prints/uyupun-poster.pdf
+
+- id: uyupun-flyer
+  title: UYUPUN フライヤー
+  type: print
+  thumbnail: ./works/uyupun-flyer.jpg
+  url: /prints/uyupun-flyer.pdf
+
+- id: spaholder
+  title: 真黒合体スパホルダー
+  type: work
+  thumbnail: ./works/spaholder.jpg
+  youtube: Y1sB2Gozlrs
+
+- id: xen
+  title: Xen
+  type: work
+  thumbnail: ./works/xen.jpg
+  youtube: ZFYtnfJlMT8

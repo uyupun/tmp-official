@@ -1,5 +1,7 @@
 ---
 // メンバーカードコンポーネント
+import NewTabMark from "./NewTabMark.astro";
+
 export interface Props {
   name: string;
   roles: string[];
@@ -24,22 +26,7 @@ const linkProps = websiteUrl
   ]}
 >
   {/* リンクのないカードと見分けるための目印（スマホでも見えるよう常に表示） */}
-  {websiteUrl && (
-    <svg
-      class="absolute top-3 right-3 w-4 h-4 text-white/60"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M5 11 11 5M6 5h5v5" />
-    </svg>
-  )}
+  {websiteUrl && <NewTabMark />}
   <div class="flex flex-col items-center text-center">
     <div class="w-14 h-14 mb-3">
       {imageUrl ? (
