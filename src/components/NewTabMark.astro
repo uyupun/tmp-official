@@ -1,12 +1,18 @@
 ---
-// 押すと別タブで開くカード（外部サイト・PDF・動画）に付ける矢印。MEMBERS と WORKS のカードで同じ位置（右下）に出す
+// 押すと別タブで開くカード（外部サイト・PDF・動画）に付ける矢印。MEMBERS と WORKS のカード、スマホの LINKS の各行で同じ位置（右下）に出す
 // 親要素（リンク）に relative を付けて使う
 // 矢印は読み上げないが、別タブで開くことは読み上げで伝わるよう、見えない文言をリンクの名前に足す
+// class は矢印に付く（画面幅によって矢印だけを隠すときに使う。読み上げの文言は残す）
+export interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
 ---
 
 <span class="sr-only">（新しいタブで開く）</span>
 <svg
-  class="absolute bottom-3 right-3 w-4 h-4 text-white/60"
+  class:list={["absolute bottom-3 right-3 w-4 h-4 text-white/60", className]}
   width="16"
   height="16"
   viewBox="0 0 16 16"

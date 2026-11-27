@@ -1,24 +1,33 @@
 ---
 // リンクセクションコンポーネント
+// スマホでは1行ずつ押せるよう縦の一覧にし、タブレット以上では1枚のパネルに横へ並べる
+import NewTabMark from "./NewTabMark.astro";
+
+const links = [
+  { label: "GitHub", href: "https://github.com/uyupun" },
+  { label: "Takada Semi", href: "https://semi.uyupun.tech" },
+  { label: "UYUPUN RADIO", href: "https://www.youtube.com/@uyupun-radio" },
+  { label: "Qiita", href: "https://qiita.com/organizations/uyupun" },
+  { label: "GitHub (Archive)", href: "https://github.com/uyupun-archive" },
+];
 ---
 
 <div class="mt-12 w-full max-w-2xl mx-auto">
   <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6 display-text">LINKS</h2>
-  <div class="w-fit mx-auto flex flex-col text-center gap-y-2 md:flex-row md:flex-wrap md:justify-center md:gap-x-8 md:gap-y-1.5 bg-black/50 backdrop-blur-sm rounded-lg px-6 py-3 text-white">
-    <a href="https://github.com/uyupun" target="_blank" rel="noopener noreferrer" class="hover:underline">
-      GitHub
-    </a>
-    <a href="https://semi.uyupun.tech" target="_blank" rel="noopener noreferrer" class="hover:underline">
-      Takada Semi
-    </a>
-    <a href="https://www.youtube.com/@uyupun-radio" target="_blank" rel="noopener noreferrer" class="hover:underline">
-      UYUPUN RADIO
-    </a>
-    <a href="https://qiita.com/organizations/uyupun" target="_blank" rel="noopener noreferrer" class="hover:underline">
-      Qiita
-    </a>
-    <a href="https://github.com/uyupun-archive" target="_blank" rel="noopener noreferrer" class="hover:underline">
-      GitHub (Archive)
-    </a>
+  {/* スマホで押した行だけを、ほかのパネルの hover（bg-black/65）と同じ暗さにする（パネルの /50 に /30 を重ねると約 /65）
+      暗くした行がパネルの丸い角からはみ出さないよう、最初と最後の行の角も丸める（パネルで切り取るとキーボード操作の枠線まで切れる）
+      pr-10 は右の矢印の場所（矢印 16px と左右の 12px） */}
+  <div class="flex flex-col divide-y divide-white/15 md:w-fit md:mx-auto md:flex-row md:flex-wrap md:justify-center md:gap-x-8 md:gap-y-1.5 md:divide-y-0 md:px-6 md:py-3 bg-black/50 backdrop-blur-sm rounded-lg text-white">
+    {links.map(({ label, href }) => (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="relative block px-4 py-3 pr-10 first:rounded-t-lg last:rounded-b-lg hover:bg-black/30 focus-visible:bg-black/30 transition-colors md:p-0 md:rounded-none md:hover:bg-transparent md:focus-visible:bg-transparent md:hover:underline md:focus-visible:underline"
+      >
+        {label}
+        <NewTabMark class="md:hidden" />
+      </a>
+    ))}
   </div>
 </div>
