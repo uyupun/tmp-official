@@ -1,0 +1,14 @@
+---
+// 下層ページからトップへ戻るリンク。サイト内のページ移動は「ひげ文字＋矢印」（トップの All works → と対になる）
+// 下地がなく、作品画像の上に重なると読みにくいので固定はせず、ページの上下に置く
+// 戻り先はトップの先頭ではなく WORKS の位置（一覧に来る前に見ていた場所に戻す）
+export interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<p class:list={["w-full max-w-2xl", className]}>
+  <a href="/#works" class="display-text text-2xl md:text-3xl hover:opacity-80 transition-opacity">← Home</a>
+</p>

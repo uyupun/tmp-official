@@ -1,0 +1,115 @@
+---
+// トップページ用の作品セクション。先頭から3件を横一列に並べ、残りは一覧ページへ誘導する
+// カードの高さだけをそろえ、幅は画像の縦横比のまま変える（縦長は細く、横長は広く）
+import { getWorks } from "../lib/works";
+import WorkCard from "./WorkCard.astro";
+
+const FEATURED_COUNT = 3;
+
+const works = await getWorks();
+const featured = works.slice(0, FEATURED_COUNT);
+---
+
+{/* 0件のときは見出しだけが残らないようセクションごと出さない。幅はすぐ下の MEMBERS と同じ（タブレット幅だけ細くなる） */}
+{featured.length > 0 && (
+  <section id="works" class="mt-12 w-full max-w-2xl md:max-w-lg lg:max-w-2xl">
+    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6 display-text">WORKS</h2>
+    <div class="strip">
+      {featured.map((work) => (
+        <WorkCard work={work} class="strip-card" />
+      ))}
+    </div>
+    <div class="flex items-center justify-between gap-4 mt-3">
+      {/* 横にめくれることを、作品の数だけの点で伝える（今見ている作品の点を白くする）
+          横一列に収まる 1024px 以上では出さないが、All works → を右に寄せたままにするため場所は残す
+          点は押しやすいよう余白付きのボタンにし、その余白の分だけ外へずらして列の左端にそろえる */}
+      <div class="dots flex -mx-1.5 lg:invisible">
+        {featured.map((work, i) => (
+          <button type="button" class="p-1.5 cursor-pointer" aria-label={`${work.data.title} を表示`}>
+            <span class:list={["dot block w-2.5 h-2.5 rounded-full bg-white/40 transition-colors", i === 0 && "is-active"]} />
+          </button>
+        ))}
+      </div>
+      {works.length > FEATURED_COUNT && (
+        <a href="/works" class="display-text text-2xl md:text-3xl hover:opacity-80 transition-opacity">All works →</a>
+      )}
+    </div>
+  </section>
+)}
+
+<script>
+  // スクロール位置の端数（小数の px やスナップの誤差）で判定がぶれないよう、この程度のずれは同じ位置とみなす
+  const SCROLL_TOLERANCE = 4;
+
+  // ClientRouter でページを切り替えると script は再実行されないため、page-load ごとに紐づけ直す
+  document.addEventListener("astro:page-load", () => {
+    const section = document.getElementById("works");
+    const strip = section?.querySelector<HTMLElement>(".strip");
+    if (!section || !strip) return;
+    const cards = Array.from(strip.children) as HTMLElement[];
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>(".dots button"));
+    const offsetOf = (card: HTMLElement) => card.offsetLeft - strip.offsetLeft;
+
+    // 左端に来ているいちばん後ろのカードを「今見ている作品」とする。右端まで来たら最後のカード
+    const currentIndex = () => {
+      if (strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - SCROLL_TOLERANCE) return cards.length - 1;
+      return cards.findLastIndex((card) => offsetOf(card) <= strip.scrollLeft + SCROLL_TOLERANCE);
+    };
+
+    strip.addEventListener(
+      "scroll",
+      () => {
+        const current = currentIndex();
+        buttons.forEach((button, i) => {
+          button.firstElementChild?.classList.toggle("is-active", i === current);
+        });
+      },
+      { passive: true },
+    );
+    // 点を押すと、その作品が左端に来るまでめくる
+    buttons.forEach((button, i) => {
+      button.addEventListener("click", () => {
+        strip.scrollTo({ left: offsetOf(cards[i]), behavior: "smooth" });
+      });
+    });
+  });
+</script>
+
+<style>
+  .dot.is-active {
+    background: white;
+  }
+
+  .strip {
+    display: flex;
+    /* カードの下端をそろえる（タイトルの行数が違ってもカードの高さは同じ） */
+    align-items: stretch;
+    gap: 8px;
+    /* 1024px 未満では画像の高さを固定して横にめくる */
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .strip > :global(.strip-card) {
+    /* WorkCard の p-2 と同じ値。カードの幅は「画像の幅 ＋ 左右のベゼル」になる */
+    --bezel: 8px;
+    --image-height: 200px;
+    /* 作品名の長い単語に押されてカードが広がると、縦横比どおりの幅にならず画像の高さがずれるので、中身より狭くなるのを許す */
+    min-width: 0;
+    flex: 0 0 calc(var(--ratio) * var(--image-height) + var(--bezel) * 2);
+    scroll-snap-align: start;
+  }
+
+  /* 1024px 以上では列の幅にぴったり収める。伸び率を縦横比にすると、どの画像も同じ高さになる
+     （それより狭いと画像が小さくなりすぎるので、高さを固定して横にめくる） */
+  @media (min-width: 1024px) {
+    .strip {
+      overflow: visible;
+    }
+
+    .strip > :global(.strip-card) {
+      flex: var(--ratio) var(--ratio) calc(var(--bezel) * 2);
+    }
+  }
+</style>

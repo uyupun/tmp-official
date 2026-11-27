@@ -1,38 +1,31 @@
 ---
 // メンバーセクションコンポーネント
 import MemberCard from "./MemberCard.astro";
+
+// 画像とサイトは任意。画像がなければ名前の頭文字を出し、サイトがなければカードをリンクにしない
+const members = [
+  {
+    name: "Takashi",
+    roles: ["Frontend Engineer", "UX Designer"],
+    imageUrl: "/members/takashi.webp",
+    websiteUrl: "https://takashimelon.com/",
+  },
+  { name: "Kakky", roles: ["Hardware Engineer", "Backend Engineer", "Agitator"] },
+  {
+    name: "Kazukichi",
+    roles: ["Software Engineer", "Visual Designer", "Creative Director"],
+    imageUrl: "/members/kazukichi.png",
+    websiteUrl: "https://tyokinuhata.github.io/",
+  },
+  { name: "Daisuke", roles: ["Backend Engineer", "Props Designer"] },
+  { name: "Tatsuo", roles: ["Construction Worker"] },
+];
 ---
 
 <div class="mt-12 w-full max-w-2xl md:max-w-lg lg:max-w-2xl">
   <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-6 display-text">MEMBERS</h2>
-  <div class="w-fit md:w-full mx-auto grid auto-rows-fr grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-1 lg:gap-2">
-    <MemberCard
-      name="Takashi"
-      roles={["Frontend Engineer", "UX Designer"]}
-      imageUrl="/members/takashi.webp"
-      websiteUrl="https://takashimelon.com/"
-    />
-
-    <MemberCard
-      name="Kakky"
-      roles={["Hardware Engineer", "Backend Engineer", "Agitator"]}
-    />
-
-    <MemberCard
-      name="Kazukichi"
-      roles={["Software Engineer", "Visual Designer", "Creative Director"]}
-      imageUrl="/members/kazukichi.png"
-      websiteUrl="https://tyokinuhata.github.io/"
-    />
-
-    <MemberCard
-      name="Daisuke"
-      roles={["Backend Engineer", "Props Designer"]}
-    />
-
-    <MemberCard
-      name="Tatsuo"
-      roles={["Construction Worker"]}
-    />
+  {/* カードの高さは、いちばん肩書きの多い人に合わせてそろえる（メンバーは対等なので同じ大きさで並べる） */}
+  <div class="grid grid-cols-1 auto-rows-fr md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-1 lg:gap-2">
+    {members.map((member) => <MemberCard {...member} />)}
   </div>
 </div>

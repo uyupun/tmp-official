@@ -1,7 +1,20 @@
 @import "tailwindcss";
 
+/* Zen Kaku Gothic New のギリシャ文字と数学記号は和文用の全角の字形で、欧文の中では大きさも字間も浮く
+   （作品名の「Eigenzeiτ」「∂hosts」など）。その文字だけ端末の欧文書体で表示する */
+@font-face {
+  font-family: "Greek Math Symbols";
+  src:
+    local("Helvetica Neue"), local("HelveticaNeue"), local("Arial"),
+    local("ArialMT"), local("Roboto");
+  unicode-range: U+0370-03FF, U+2200-22FF;
+  /* 本文の書体は太さ 400 だけを読み込み、太字はブラウザが太らせて作っている。
+     記号もどの太さでもこの1つを使わせ、同じように太らせて本文と見た目をそろえる */
+  font-weight: 100 900;
+}
+
 * {
-  font-family: var(--font-zen-kaku-gothic-new);
+  font-family: "Greek Math Symbols", var(--font-zen-kaku-gothic-new);
 }
 
 /* 見出し用の書体（Pirata One + 白い縁取り） */

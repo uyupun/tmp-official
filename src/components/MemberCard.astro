@@ -1,5 +1,9 @@
 ---
 // メンバーカードコンポーネント
+// スマホではアイコンを左に置いた横長のカードにし、縦に並んでも間延びしないようにする。タブレット以上はアイコンを上に置く
+// スマホではカードの高さがそろって余る分を上下に分けるため、中身をカードの上下中央に置く
+import NewTabMark from "./NewTabMark.astro";
+
 export interface Props {
   name: string;
   roles: string[];
@@ -19,29 +23,14 @@ const linkProps = websiteUrl
 <Tag
   {...linkProps}
   class:list={[
-    "relative block bg-black/50 backdrop-blur-sm rounded-lg p-7 text-white",
+    "relative flex items-center md:block bg-black/50 backdrop-blur-sm rounded-lg p-4 pr-10 md:p-7 text-white",
     websiteUrl && "hover:bg-black/65 focus-visible:bg-black/65 transition-colors",
   ]}
 >
-  {/* リンクのないカードと見分けるための目印（スマホでも見えるよう常に表示） */}
-  {websiteUrl && (
-    <svg
-      class="absolute top-3 right-3 w-4 h-4 text-white/60"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M5 11 11 5M6 5h5v5" />
-    </svg>
-  )}
-  <div class="flex flex-col items-center text-center">
-    <div class="w-14 h-14 mb-3">
+  {/* リンクのないカードと見分けるための目印（スマホでも見えるよう常に表示）。スマホの pr-10 はこの矢印の場所 */}
+  {websiteUrl && <NewTabMark />}
+  <div class="flex items-center gap-4 md:flex-col md:gap-0 md:text-center">
+    <div class="w-14 h-14 shrink-0 md:mb-3">
       {imageUrl ? (
         <img src={imageUrl} alt="" class="w-full h-full object-contain rounded-full bg-white p-1.5">
       ) : (
@@ -50,13 +39,15 @@ const linkProps = websiteUrl
         </div>
       )}
     </div>
-    <h3 class="text-lg font-bold mb-2">{name}</h3>
-    <p class="text-sm text-white/70">
-      {roles.map((role, index) => (
-        <>
-          {role}{index < roles.length - 1 && <br />}
-        </>
-      ))}
-    </p>
+    <div>
+      <h3 class="text-lg font-bold mb-1 md:mb-2">{name}</h3>
+      <p class="text-sm text-white/70">
+        {roles.map((role, index) => (
+          <>
+            {role}{index < roles.length - 1 && <br />}
+          </>
+        ))}
+      </p>
+    </div>
   </div>
 </Tag>

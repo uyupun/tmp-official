@@ -77,13 +77,14 @@
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
-  const container = document.getElementById("logo-canvas");
-  if (container) {
+  // ロゴの描画幅（px）。Header の .logo-wrapper の最大幅と同じ
+  const LOGO_WIDTH = 700;
+
+  function drawLogo(container: HTMLElement) {
     const img = new Image();
     img.onload = () => {
-      const width = 700;
-      const height = Math.round(img.height * (width / img.width));
-      const canvas = createCanvas(container, width, height);
+      const height = Math.round(img.height * (LOGO_WIDTH / img.width));
+      const canvas = createCanvas(container, LOGO_WIDTH, height);
 
       const gl = canvas.getContext("webgl2");
       if (!gl) return;
@@ -95,12 +96,19 @@
 
       setupQuad(gl, prog);
       setupTexture(gl, img);
-      setupUniforms(gl, prog, width, height);
-      render(gl, width, height);
+      setupUniforms(gl, prog, LOGO_WIDTH, height);
+      render(gl, LOGO_WIDTH, height);
       container.classList.add("is-loaded");
     };
     img.src = "/uyupun_logo.png";
   }
+
+  // ClientRouter でページを切り替えると script は再実行されないため、トップに戻るたびに描画し直す
+  // （ロゴがあるのはトップだけなので、ほかのページでは何もしない）
+  document.addEventListener("astro:page-load", () => {
+    const container = document.getElementById("logo-canvas");
+    if (container) drawLogo(container);
+  });
 </script>
 
 <style>
