@@ -40,11 +40,13 @@ const linkProps = href ? { href, target: "_blank", rel: "noopener noreferrer" } 
   {/* いちばん目立たせるのは作品名。種別（出展と印刷物は年月、作者がいれば名前も）を添える。大きさは MEMBERS の名前・肩書きとそろえる
       文字はベゼルより 4px 内側に置き、カードの端から 12px（右下の矢印と同じ余白）にそろえる */}
   <div class="px-1">
-    <p class="mt-2 text-base md:text-lg font-bold leading-snug">{work.data.title}</p>
-    {/* 矢印と重ならないよう右に余白をとる */}
-    <p class="mt-1 pr-5 text-sm tracking-wider text-white/70">{captionOf(work)}</p>
+    <p class="mt-1 text-base md:text-lg font-bold leading-snug">{work.data.title}</p>
+    {/* 作品名との間は詰め、画像との間（ベゼル）より狭くして、作品名と1組に見せる。矢印と重ならないよう右に余白をとる */}
+    <p class="pr-5 text-sm leading-tight tracking-wider text-white/70">{captionOf(work)}</p>
   </div>
-  {href && <NewTabMark />}
+  {/* 矢印の下端を種別の行の文字の下端にそろえる（角から 12px のままだと行より上に浮いて見える）
+      矢印の線はアイコンの枠の下から 5px 上で終わるので、枠をカードの下から 8px に置くと文字の下端（約13px）に合う */}
+  {href && <NewTabMark position="bottom-2 right-3" />}
 </Tag>
 
 <style>
