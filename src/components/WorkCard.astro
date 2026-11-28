@@ -37,10 +37,13 @@ const linkProps = href ? { href, target: "_blank", rel: "noopener noreferrer" } 
       class="block w-full h-full object-cover"
     />
   </div>
-  {/* いちばん目立たせるのは作品名。種別（出展と印刷物は年月、作者がいれば名前も）を添える。大きさは MEMBERS の名前・肩書きとそろえる */}
-  <p class="mt-2 text-base md:text-lg font-bold leading-snug">{work.data.title}</p>
-  {/* 矢印と重ならないよう右に余白をとる */}
-  <p class="mt-1 pr-5 text-sm tracking-wider text-white/70">{captionOf(work)}</p>
+  {/* いちばん目立たせるのは作品名。種別（出展と印刷物は年月、作者がいれば名前も）を添える。大きさは MEMBERS の名前・肩書きとそろえる
+      文字はベゼルより 4px 内側に置き、カードの端から 12px（右下の矢印と同じ余白）にそろえる */}
+  <div class="px-1">
+    <p class="mt-2 text-base md:text-lg font-bold leading-snug">{work.data.title}</p>
+    {/* 矢印と重ならないよう右に余白をとる */}
+    <p class="mt-1 pr-5 text-sm tracking-wider text-white/70">{captionOf(work)}</p>
+  </div>
   {href && <NewTabMark />}
 </Tag>
 
